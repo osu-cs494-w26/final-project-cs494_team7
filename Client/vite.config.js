@@ -10,4 +10,9 @@ export default defineConfig({
       },
     }),
   ],
+  // server: {
+  //   proxy: {
+  //     '/wishlist': 'http://localhost:5000'
+  //   },
+  // },
 })
