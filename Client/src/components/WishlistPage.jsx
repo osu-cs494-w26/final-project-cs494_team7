@@ -1,50 +1,30 @@
-import { useState, useEffect } from 'react'
-import { Box, Flex, Text, Button, Section, Skeleton } from '@radix-ui/themes'
+import { Box, Flex, Text, Section } from '@radix-ui/themes'
+import { useGetWishlistQuery } from '../redux/serverApi'
+import WishlistItem from './WishlistItem'
 
 export default function WishlistPage() {
-  const [items, setItems] = useState([])
-  const [gameDetails, setGameDetails] = useState({})
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/wishlist')
-      .then(res => res.ok ? res.json() : [])
-      .then(async (wishlistItems) => {
-        setItems(wishlistItems)
-        const detailEntries = await Promise.all(
-          wishlistItems.map(async ({ CheapsharkGameID }) => {
-            const res = await fetch(`https://www.cheapshark.com/api/1.0/games?id=${CheapsharkGameID}`)
-            const data = res.ok ? await res.json() : null
-            return [CheapsharkGameID, data]
-          })
-        )
-        setGameDetails(Object.fromEntries(detailEntries))
-      })
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false))
-  }, [])
-
-  function removeFromWishlist(gameID) {
-    fetch('/wishlist/delete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ CheapsharkGameID: gameID }),
-    }).then(res => {
-      if (res.ok) setItems(prev => prev.filter(i => i.CheapsharkGameID !== gameID))
-    })
-  }
+  const { data: items = [], isLoading, error } = useGetWishlistQuery()
 
   return (
     <Section p="4">
       <Flex mb="4">
         <Box style={{ border: '1px solid var(--gray-6)', padding: '4px 12px' }}>
-          <Text size="2" weight="medium">{/* username ??  */'Not signed in'} / Wishlist</Text>
+          <Text size="2" weight="medium">Wishlist</Text>
         </Box>
-        <Button variant="solid">Filters</Button>
       </Flex>
 
-      <Flex direction="column" gap="4" mt="4">
-        {/* Deals List */}
+      <Flex direction="column" mt="4">
+        {error ? (
+          <Text color="red">Could not load wishlist.</Text>
+        ) : isLoading ? (
+          <Text>Loading...</Text>
+        ) : items.length === 0 ? (
+          <Text color="gray">Your wishlist is empty.</Text>
+        ) : (
+          items.map(item => (
+            <WishlistItem key={item.CheapsharkGameID} item={item} />
+          ))
+        )}
       </Flex>
     </Section>
   )
