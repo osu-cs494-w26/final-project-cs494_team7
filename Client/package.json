@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@radix-ui/themes": "^3.3.0",
+    "@reduxjs/toolkit": "^2.11.2",
     "lucide-react": "^0.575.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-redux": "^9.2.0",
     "react-router": "^7.13.1"
   },
   "devDependencies": {
