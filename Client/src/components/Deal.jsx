@@ -1,40 +1,56 @@
-import { Badge, Box, Flex, Section, Skeleton, Text } from "@radix-ui/themes";
+import { Badge, Flex, Section, Text, Button, Link } from "@radix-ui/themes";
 import { Menu } from "lucide-react";
 
 
-export default function Deal() {
-
+export default function Deal({ dealData, storeName }) {
   return (
     <Section p="5" style={{borderBottom: "1px solid gray"}}>
       <Flex justify={"between"} align={"center"}>
         <Flex align={"center"} gap={"5"}>
           <Menu />
-          <Skeleton>
-            <Box width="256px" height="128px" />
-          </Skeleton>
+          <div style={{
+            width: "160px",
+            overflow: "hidden",
+            borderRadius: "8px"
+          }}>
+            <img
+              src={dealData.thumb}
+              alt={dealData.title}
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block"
+              }}
+            />
+          </div>
           <Flex direction="column" gap="4" justify={"between"}>
-            <Text size={"7"}>Game Title</Text>
+          <Link
+            href={`https://www.cheapshark.com/redirect?dealID=${dealData.dealID}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Text size={"7"}>{dealData.title}</Text>
+          </Link>
             <Flex align={"center"} gap="2">
-              <Text>Platforms:</Text>
-              <Badge>Steam</Badge>
-              <Badge>Epic Games</Badge>
-              <Badge>GOG</Badge>
+              <Text>Store:</Text>
+              <Badge>{storeName}</Badge>
             </Flex>
             <Flex align={"center"} gap="2">
-              <Text>Tags:</Text>
-              <Badge>RPG</Badge>
-              <Badge>Space</Badge>
-              <Badge>Exploration</Badge>
+              <Text>Savings:</Text>
+              <Badge>{Math.round(dealData.savings)}%</Badge>
             </Flex>
           </Flex>
         </Flex>
-        <Flex align={"end"} direction={"column"}>
-          <Text size={"5"} style={{textDecoration: "line-through", color: "var(--gray-11"}} >
-            $59.99
-          </Text>
-          <Text size={"8"}>
-            $29.99
-          </Text>
+        <Flex align={"center"} gap="5">
+          <Flex align={"center"} direction={"column"} justify={"center"}>
+            <Text size={"5"} style={{textDecoration: "line-through", color: "var(--gray-11"}} >
+              ${dealData.normalPrice}
+            </Text>
+            <Text size={"8"}>
+              ${dealData.salePrice}
+            </Text>
+            <Button size="3" style={{marginTop: 6}}>Add to Wishlist</Button>
+          </Flex>
         </Flex>
       </Flex>
     </Section>
