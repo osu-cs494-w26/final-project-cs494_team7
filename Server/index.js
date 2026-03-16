@@ -41,6 +41,10 @@ const Pool = mariadb.createPool(db_options);
 // App initialization
 const App = express();
 
+// Deployment is behind 1 reverse proxy
+if (process.env.ENVIRONMENT === 'production')
+  App.set('trust proxy', 1)
+
 // Setup middleware
 App.use(express.json());
 
