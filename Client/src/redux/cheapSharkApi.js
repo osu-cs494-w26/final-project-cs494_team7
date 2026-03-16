@@ -47,11 +47,14 @@ export const cheapSharkApi = createApi({
         getGame: builder.query({
             query: (id) => ({
                 url: "/games",
-                params: { id }
+                params: {
+                    id: id
+                }
             }),
+            transformResponse: (response) => Object.values(response ?? {}),
         }),
     }),
 })
 
 
-export const { useGetDealsQuery, useGetStoresQuery, useGetMultipleGamesQuery, useGetGameQuery } = cheapSharkApi
+export const { useGetDealsQuery, useGetStoresQuery, useGetMultipleGamesQuery, useGetGameQuery,  } = cheapSharkApi

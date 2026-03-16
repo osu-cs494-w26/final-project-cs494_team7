@@ -2,6 +2,8 @@ import { BrowserRouter, createBrowserRouter, RouterProvider } from 'react-router
 import Navbar from './components/Navbar'
 import DealsPage from './components/DealsPage'
 import WishlistPage from './components/WishlistPage'
+import store from './redux/store'
+import { Provider } from 'react-redux'
 
 function App() {
   const router = createBrowserRouter([
@@ -22,7 +24,9 @@ function App() {
   ])
 
   return (
+    <Provider store={store}>
       <RouterProvider router={router} />
+    </Provider>
   )
 }
 
