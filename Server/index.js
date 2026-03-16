@@ -44,6 +44,23 @@ const App = express();
 // Setup middleware
 App.use(express.json());
 
+// CORS middleware to allow credentials from frontend
+App.use((req, res, next) => {
+  const allowedOrigin = process.env.ENVIRONMENT === 'production' 
+    ? 'https://gamedeals.top'
+    : 'http://localhost:5173';
+  
+  res.header('Access-Control-Allow-Origin', allowedOrigin);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 const sessionStore = new MySQLStore(db_options);
 App.use(
   session({
@@ -54,8 +71,9 @@ App.use(
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-      sameSite: true,
-      secure: false,
+      sameSite: 'Lax',
+      secure: process.env.ENVIRONMENT === 'production',
+      httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
     },
   }),
@@ -188,7 +206,7 @@ App.get("/signout", Authenticated, (req, res) => {
 // Get current session username, can also be useful to determine if user is signed in
 App.get("/session", async (req, res) => {
   if (req.session.Authenticated) {
-    res.status(200).send(req.session.Username); // Success
+    res.status(200).json({ username: req.session.Username }); // Success
   } else {
     res.status(401).send(); // Unauthorized, who are you? No session
   }
