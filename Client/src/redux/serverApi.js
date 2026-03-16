@@ -3,7 +3,10 @@ import { APIUrl } from '../config'
 
 export const serverApi = createApi({
     reducerPath: 'serverApi',
-    baseQuery: fetchBaseQuery({ baseUrl: APIUrl }),
+    baseQuery: fetchBaseQuery({ 
+        baseUrl: APIUrl,
+        credentials: 'include'
+    }),
     tagTypes: ['Wishlist'],
     endpoints: builder => ({
         getWishlist: builder.query({
