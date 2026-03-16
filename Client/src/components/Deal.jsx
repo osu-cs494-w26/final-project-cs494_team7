@@ -1,8 +1,19 @@
 import { Badge, Flex, Section, Text, Button, Link } from "@radix-ui/themes";
 import { Menu } from "lucide-react";
+import { useInsertWishlistItemMutation } from "../redux/serverApi";
 
 
 export default function Deal({ dealData, storeName }) {
+  const [insertItem, { isLoading }] = useInsertWishlistItemMutation()
+
+  const handleAddToWishlist = async () => {
+    try {
+      await insertItem(dealData.gameID)
+    } catch (err) {
+      console.error('Failed to add to wishlist:', err)
+    }
+  }
+
   return (
     <Section p="5" style={{borderBottom: "1px solid gray"}}>
       <Flex justify={"between"} align={"center"}>
@@ -49,7 +60,14 @@ export default function Deal({ dealData, storeName }) {
             <Text size={"8"}>
               ${dealData.salePrice}
             </Text>
-            <Button size="3" style={{marginTop: 6}}>Add to Wishlist</Button>
+            <Button 
+              size="3" 
+              style={{marginTop: 6}}
+              onClick={handleAddToWishlist}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Adding...' : 'Add to Wishlist'}
+            </Button>
           </Flex>
         </Flex>
       </Flex>
