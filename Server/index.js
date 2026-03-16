@@ -72,7 +72,7 @@ App.use(
     store: sessionStore,
     cookie: {
       sameSite: 'Lax',
-      secure: true,
+      secure: process.env.ENVIRONMENT === 'production',
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
     },
