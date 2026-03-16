@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Box, Flex, Text, Button, Section, Skeleton } from '@radix-ui/themes'
+import { APIUrl } from '../config.jsx'
 
 export default function WishlistPage() {
   const [items, setItems] = useState([])
@@ -7,7 +8,7 @@ export default function WishlistPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/wishlist')
+    fetch(`${APIUrl}/wishlist`)
       .then(res => res.ok ? res.json() : [])
       .then(async (wishlistItems) => {
         setItems(wishlistItems)
@@ -25,7 +26,7 @@ export default function WishlistPage() {
   }, [])
 
   function removeFromWishlist(gameID) {
-    fetch('/wishlist/delete', {
+    fetch(`${APIUrl}/wishlist/delete`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ CheapsharkGameID: gameID }),
