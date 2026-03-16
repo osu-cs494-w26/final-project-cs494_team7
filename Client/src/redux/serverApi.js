@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { APIUrl } from '../config'
 
 export const serverApi = createApi({
     reducerPath: 'serverApi',
-    baseQuery: fetchBaseQuery({ baseUrl: '/' }),
+    baseQuery: fetchBaseQuery({ baseUrl: APIUrl }),
     tagTypes: ['Wishlist'],
     endpoints: builder => ({
         getWishlist: builder.query({
