@@ -10,6 +10,11 @@ export default defineConfig({
       },
     }),
   ],
+  preview: {
+    allowedHosts: [
+      'gamedeals.top'
+    ]
+  }
   // server: {
   //   proxy: {
   //     '/wishlist': 'http://localhost:5000'
