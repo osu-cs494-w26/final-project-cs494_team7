@@ -1,51 +1,47 @@
-import { useState, useEffect } from 'react'
-import { Box, Flex, Text, Button, Section, Skeleton } from '@radix-ui/themes'
-import { APIUrl } from '../config.jsx'
+import { Box, Flex, Text, Section, Button } from '@radix-ui/themes'
+import { useGetWishlistQuery, useUpdateWishlistPublicityMutation } from '../redux/serverApi'
+import WishlistItem from './WishlistItem'
+import { useState } from 'react'
 
 export default function WishlistPage() {
-  const [items, setItems] = useState([])
-  const [gameDetails, setGameDetails] = useState({})
-  const [loading, setLoading] = useState(true)
+  const { data: items = [], isLoading, error } = useGetWishlistQuery()
+  const [updatePublicity, { isLoading: isUpdating }] = useUpdateWishlistPublicityMutation()
+  const [isPublic, setIsPublic] = useState(false)
 
-  useEffect(() => {
-    fetch(`${APIUrl}/wishlist`)
-      .then(res => res.ok ? res.json() : [])
-      .then(async (wishlistItems) => {
-        setItems(wishlistItems)
-        const detailEntries = await Promise.all(
-          wishlistItems.map(async ({ CheapsharkGameID }) => {
-            const res = await fetch(`https://www.cheapshark.com/api/1.0/games?id=${CheapsharkGameID}`)
-            const data = res.ok ? await res.json() : null
-            return [CheapsharkGameID, data]
-          })
-        )
-        setGameDetails(Object.fromEntries(detailEntries))
-      })
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false))
-  }, [])
-
-  function removeFromWishlist(gameID) {
-    fetch(`${APIUrl}/wishlist/delete`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ CheapsharkGameID: gameID }),
-    }).then(res => {
-      if (res.ok) setItems(prev => prev.filter(i => i.CheapsharkGameID !== gameID))
-    })
+  const handleTogglePublicity = async () => {
+    const newStatus = !isPublic
+    setIsPublic(newStatus)
+    await updatePublicity(newStatus)
   }
 
   return (
     <Section p="4">
-      <Flex mb="4">
+      <Flex mb="4" justify="between" align="center">
         <Box style={{ border: '1px solid var(--gray-6)', padding: '4px 12px' }}>
-          <Text size="2" weight="medium">{/* username ??  */'Not signed in'} / Wishlist</Text>
+          <Text size="2" weight="medium">Wishlist</Text>
         </Box>
-        <Button variant="solid">Filters</Button>
+        <Button
+          onClick={handleTogglePublicity}
+          disabled={isUpdating}
+          variant={isPublic ? "solid" : "soft"}
+          color={isPublic ? "green" : "gray"}
+        >
+          {isPublic ? "Public" : "Private"}
+        </Button>
       </Flex>
 
-      <Flex direction="column" gap="4" mt="4">
-        {/* Deals List */}
+      <Flex direction="column" mt="4">
+        {error ? (
+          <Text color="red">Could not load wishlist.</Text>
+        ) : isLoading ? (
+          <Text>Loading...</Text>
+        ) : items.length === 0 ? (
+          <Text color="gray">Your wishlist is empty.</Text>
+        ) : (
+          items.map(item => (
+            <WishlistItem key={item.CheapsharkGameID} item={item} />
+          ))
+        )}
       </Flex>
     </Section>
   )
