@@ -1,5 +1,4 @@
 import { Section, Flex, Text, Button, TextField } from '@radix-ui/themes'
-import { Search } from 'lucide-react'
 import { Outlet, Link, useNavigate } from 'react-router'
 import { useGetSessionQuery, useSignoutMutation } from '../redux/serverApi'
 
@@ -37,13 +36,6 @@ export default function Navbar({children}) {
             </Flex>
           </Flex>
           <div>
-            <TextField.Root placeholder="Search For Games">
-              <TextField.Slot>
-                <Search height={"16px"} width={"16px"} />
-              </TextField.Slot>
-            </TextField.Root>
-          </div>
-          <div>
             {username ? (
               <Flex gap="3" align="center">
                 <Text size="2">{username}</Text>
@@ -58,5 +50,4 @@ export default function Navbar({children}) {
       {children || <Outlet />}
     </>
   )
-
 }

@@ -1,10 +1,11 @@
 import { Box, Flex, Text, Section, Button } from '@radix-ui/themes'
-import { useGetWishlistQuery, useUpdateWishlistPublicityMutation } from '../redux/serverApi'
+import { useUpdateWishlistPublicityMutation } from '../redux/serverApi'
 import WishlistItem from './WishlistItem'
 import { useState } from 'react'
+import useWishlistGames from '../hooks/useWishlistGames'
 
 export default function WishlistPage() {
-  const { data: items = [], isLoading, error } = useGetWishlistQuery()
+  const { gamesData, isLoading, wishlistError, gamesError } = useWishlistGames()
   const [updatePublicity, { isLoading: isUpdating }] = useUpdateWishlistPublicityMutation()
   const [isPublic, setIsPublic] = useState(false)
 
@@ -31,15 +32,15 @@ export default function WishlistPage() {
       </Flex>
 
       <Flex direction="column" mt="4">
-        {error ? (
+        {wishlistError || gamesError ? (
           <Text color="red">Could not load wishlist.</Text>
         ) : isLoading ? (
           <Text>Loading...</Text>
-        ) : items.length === 0 ? (
+        ) : gamesData.length === 0 ? (
           <Text color="gray">Your wishlist is empty.</Text>
         ) : (
-          items.map(item => (
-            <WishlistItem key={item.CheapsharkGameID} item={item} />
+          gamesData.map(game => (
+            <WishlistItem key={game.gameID} game={game} />
           ))
         )}
       </Flex>
