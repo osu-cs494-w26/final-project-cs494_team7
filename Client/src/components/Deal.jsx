@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 import { useInsertWishlistItemMutation } from "../redux/serverApi";
 
 
-export default function Deal({ dealData, storeName }) {
+export default function Deal({ dealData, storeName, isLoggedIn, wishlisted }) {
   const [insertItem, { isLoading }] = useInsertWishlistItemMutation()
 
   const handleAddToWishlist = async () => {
@@ -60,14 +60,16 @@ export default function Deal({ dealData, storeName }) {
             <Text size={"8"}>
               ${dealData.salePrice}
             </Text>
-            <Button 
-              size="3" 
-              style={{marginTop: 6}}
-              onClick={handleAddToWishlist}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Adding...' : 'Add to Wishlist'}
-            </Button>
+            { isLoggedIn &&
+              <Button 
+                size="3" 
+                style={{marginTop: 6}}
+                onClick={handleAddToWishlist}
+                disabled={isLoading}
+              >
+                {wishlisted ? 'on wishlist' : 'Add to Wishlist'}
+              </Button>
+            }
           </Flex>
         </Flex>
       </Flex>

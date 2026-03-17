@@ -1,7 +1,9 @@
 import { Section, Text, Button, Flex, Dialog, TextField } from "@radix-ui/themes";
 import Deal from "./Deal";
 import { useGetDealsQuery, useGetStoresQuery } from "../redux/cheapSharkApi.js";
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useGetWishlistQuery } from "../redux/serverApi.js";
+import useAuth from "../hooks/useAuth.js"
 
 const sortByOptions = {
   Savings: "Savings",
@@ -12,13 +14,13 @@ const sortByOptions = {
 
 
 export default function DealsPage() {
-  // active filter parameters
+  // Active filter parameters.
   const [pageNumber, setPageNumber] = useState(0);
   const [sortBy, setSortBy] = useState(sortByOptions.Savings);
   const [desc, setDesc] = useState(0);
   const [title, setTitle] = useState("");
 
-  // draft filter state
+  // Draft filter state.
   const [draftTitle, setDraftTitle] = useState(title);
   const [draftSortBy, setDraftSortBy] = useState(sortBy);
   const [draftDesc, setDraftDesc] = useState(desc);
@@ -33,8 +35,16 @@ export default function DealsPage() {
   const deals = data?.deals ?? []
   const totalPages = data?.totalPages ?? 1
 
+  // Get wishlist if authorized and create new set.
+  const { user, isLoggedIn } = useAuth()
+  const { data: wishlist = [] } = useGetWishlistQuery(user, {
+    skip: !isLoggedIn
+  })
+  const wishlistSet = useMemo(() => {
+    return new Set(wishlist.map(item => String(item.CheapsharkGameID)))
+  }, [wishlist])
 
-  // stores info
+  // Stores info.
   const { data: stores = [] } = useGetStoresQuery()
   const storesById = Object.fromEntries(
     stores.map(store => [store.storeID, store.storeName])
@@ -53,9 +63,6 @@ export default function DealsPage() {
     setDraftDesc(0);
   }
 
-
-  console.log(data)
-  console.log(storesById)
   return (
     <>
       <Section p="3" style={{backgroundColor: "var(--gray-2)"}}>
@@ -144,6 +151,8 @@ export default function DealsPage() {
               key={deal.dealID}
               dealData={deal}
               storeName={storesById[deal.storeID]}
+              isLoggedIn={isLoggedIn}
+              wishlisted={wishlistSet.has(String(deal.gameID))}
             />
           ))
       )}
