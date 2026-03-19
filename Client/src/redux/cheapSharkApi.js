@@ -42,7 +42,12 @@ export const cheapSharkApi = createApi({
                     ids: ids.join(",")
                 }
             }),
-            transformResponse: (response) => Object.values(response ?? {}),
+            transformResponse: (response) => {
+                return Object.entries(response).map(([gameID, game]) => ({
+                    gameID,
+                    ...game
+                }))
+            },
         }),
         getGame: builder.query({
             query: (id) => ({

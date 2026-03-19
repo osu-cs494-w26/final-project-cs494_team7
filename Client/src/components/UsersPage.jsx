@@ -1,7 +1,8 @@
 import { Box, Flex, Text, Section, TextField } from '@radix-ui/themes'
-import { useSearchUsersQuery, useGetWishlistByUserQuery } from '../redux/serverApi'
+import { useSearchUsersQuery } from '../redux/serverApi'
 import WishlistItem from './WishlistItem'
 import { useState } from 'react'
+import useWishlistGames from '../hooks/useWishlistGames'
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -11,9 +12,12 @@ export default function UsersPage() {
     skip: !searchQuery,
   })
   
-  const { data: wishlistItems = [], isLoading: isLoadingWishlist } = useGetWishlistByUserQuery(selectedUsername, {
-    skip: !selectedUsername,
-  })
+  const {
+    gamesData,
+    isLoading: isLoadingWishlist,
+    wishlistError,
+    gamesError
+  } = useWishlistGames((selectedUsername ? selectedUsername : ""))
 
   const handleSearch = (query) => {
     setSearchQuery(query)
@@ -71,11 +75,11 @@ export default function UsersPage() {
 
           {isLoadingWishlist ? (
             <Text>Loading wishlist...</Text>
-          ) : wishlistItems.length === 0 ? (
+          ) : gamesData.length === 0 ? (
             <Text color="gray">{selectedUsername}'s wishlist is empty.</Text>
           ) : (
-            wishlistItems.map((item) => (
-              <WishlistItem key={item.CheapsharkGameID} item={item} />
+            gamesData.map((game) => (
+              <WishlistItem key={game.gameID} game={game} />
             ))
           )}
         </Section>
