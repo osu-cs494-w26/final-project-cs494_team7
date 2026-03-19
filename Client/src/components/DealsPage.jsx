@@ -51,7 +51,7 @@ export default function DealsPage() {
 
   return (
     <>
-      <Section p="3" style={{backgroundColor: "var(--gray-2)"}}>
+      <Section p="3" style={{backgroundColor: "var(--gray-2)", zIndex: "900", borderBottom: "1px solid var(--gray-4)"}} position="sticky" top="72px">
         <Flex align="center" style={{ width: "100%" }}>
           <Flex style={{ flex: 1 }} justify="center" gap="4" align="center" wrap="wrap">
             
@@ -103,9 +103,9 @@ export default function DealsPage() {
         </Flex>
       </Section>
       {error ? (
-          <li>Could not load deals.</li>
+          <Text>Could not load deals.</Text>
       ) : isLoading ? (
-          <li>Loading...</li>
+          <Text>Loading...</Text>
       ) : (
           deals.map((deal) => (
             <Deal
@@ -117,7 +117,15 @@ export default function DealsPage() {
             />
           ))
       )}
-      <Flex align="center" justify="center" style={{margin: 20}} gap="2">
+      <Flex
+        align="center"
+        justify="center"
+        gap="2"
+        position="sticky"
+        bottom="0"
+        p="3"
+        style={{backgroundColor: "var(--gray-2)", zIndex: "900", borderTop: "1px solid var(--gray-4)"}}
+      >
         <Button
           onClick={() => setPageNumber(Math.max(0, pageNumber - 1))}
         >
