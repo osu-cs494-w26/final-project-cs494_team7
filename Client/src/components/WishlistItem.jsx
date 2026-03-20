@@ -25,7 +25,7 @@ export default function WishlistItem({ game, wishlisted, isLoggedIn, currentUser
 
   const handleToggleWishlist = async () => {
     try {
-      if (wishlisted) {
+      if (wishlisted && currentUser) {
         await deleteItem(game.gameID)
       } else {
         await insertItem(game.gameID)
@@ -70,7 +70,9 @@ export default function WishlistItem({ game, wishlisted, isLoggedIn, currentUser
           .map(deal => (
             <Flex key={deal.dealID} gap="2" align="center">
               <Link
-              href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+                href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {storesById[deal.storeID]}
               </Link>
