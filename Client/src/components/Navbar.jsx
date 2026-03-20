@@ -20,9 +20,10 @@ export default function Navbar() {
   return (
     <>
       <Section
-        style={{ backgroundColor: 'var(--gray-5)', zIndex: '1000' }}
+        style={{ backgroundColor: 'var(--gray-5)', zIndex: '1000'}}
         p={4}
         position="sticky"
+        width="100%"
         top="0"
       >
         <Flex

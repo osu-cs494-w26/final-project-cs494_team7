@@ -50,7 +50,7 @@ export default function DealsPage() {
 
   return (
     <>
-      <Section p="3" style={{backgroundColor: "var(--gray-2)", zIndex: "900", borderBottom: "1px solid var(--gray-4)"}} position="sticky" top="0">
+      <Section p="3" style={{backgroundColor: "var(--gray-2)", zIndex: "900", borderBottom: "1px solid var(--gray-4)"}} position="sticky" top={{ initial: "6.5rem", xs: "2rem", sm: "2.5rem" }} width="100%">
         <Flex align="center" style={{ width: "100%" }}>
           <Flex style={{ flex: 1 }} justify="center" gap="4" align="center" wrap="wrap">
             
