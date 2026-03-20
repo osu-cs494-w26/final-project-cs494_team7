@@ -1,15 +1,39 @@
 import { Flex, Text, Button, Section, Badge, Link } from '@radix-ui/themes'
-import { useDeleteWishlistItemMutation } from '../redux/serverApi'
+import { useDeleteWishlistItemMutation, useInsertWishlistItemMutation } from '../redux/serverApi'
 import { useGetStoresQuery } from '../redux/cheapSharkApi'
 
-export default function WishlistItem({ game }) {
+export default function WishlistItem({ game, wishlisted, isLoggedIn, currentUser }) {
   const [deleteItem, { isLoading: isDeleting }] = useDeleteWishlistItemMutation()
+  const [insertItem, { isLoading: isInserting }] = useInsertWishlistItemMutation()
+
+  const isRemovable = wishlisted && currentUser
+
+  let buttonText
+  if (!wishlisted) {
+    buttonText = "Add to Wishlist"
+  } else if (currentUser) {
+    buttonText = "Remove from Wishlist"
+  } else {
+    buttonText = "On Wishlist"
+  }
 
   // Stores info.
   const { data: stores = [] } = useGetStoresQuery()
   const storesById = Object.fromEntries(
     stores.map(store => [store.storeID, store.storeName])
   )
+
+  const handleToggleWishlist = async () => {
+    try {
+      if (wishlisted) {
+        await deleteItem(game.gameID)
+      } else {
+        await insertItem(game.gameID)
+      }
+    } catch (err) {
+      console.error("wishlist toggle failed:", err)
+    }
+  }
 
   return (
     <Section p="5" style={{ borderBottom: '1px solid var(--gray-6)' }}>
@@ -29,37 +53,36 @@ export default function WishlistItem({ game }) {
             </Text>
           </Flex>
         </Flex>
-        {game.ownWishlist &&
-        <Button
-          color="red"
-          variant="soft"
-          disabled={isDeleting}
-          onClick={() => deleteItem(game.gameID)}
-        >
-          Remove
-        </Button>}
+        {isLoggedIn &&
+          <Button
+            color={isRemovable ? "red" : undefined}
+            variant="soft"
+            disabled={isDeleting || isInserting}
+            onClick={handleToggleWishlist}
+          >
+            {buttonText}
+          </Button>
+        }
       </Flex>
       <Flex gap="2" direction="column" mt="2">
-        {game.deals.map(deal => (
-          <Flex  key={(deal.dealID)}>
-            {(deal.savings > 0) && (
-              <Flex gap="2" align="center">
-                <Link
-                href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
-                >
-                  {storesById[deal.storeID]}
-                </Link>
-                Retail Price:
-                <Badge>${deal.retailPrice}</Badge>
-                Deal Price:
-                <Badge>${deal.price}</Badge>
-                Savings:
-                <Badge>{Math.round(deal.savings)}%</Badge>
-              </Flex>
-              )
-            }
-          </Flex>
-        ))}
+        {game.deals
+          .filter((deal) => deal.savings > 0)
+          .map(deal => (
+            <Flex key={deal.dealID} gap="2" align="center">
+              <Link
+              href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+              >
+                {storesById[deal.storeID]}
+              </Link>
+              Retail Price:
+              <Badge>${deal.retailPrice}</Badge>
+              Deal Price:
+              <Badge>${deal.price}</Badge>
+              Savings:
+              <Badge>{Math.round(deal.savings)}%</Badge>
+            </Flex>
+            )
+        )}
       </Flex>
     </Section>
   )

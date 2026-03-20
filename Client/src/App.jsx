@@ -3,7 +3,6 @@ import AppLayout from './components/AppLayout'
 import HomePage from './components/HomePage'
 import DealsPage from './components/DealsPage'
 import WishlistPage from './components/WishlistPage'
-import PublicWishlistPage from './components/PublicWishlistPage'
 import UsersPage from './components/UsersPage'
 import LoginPage from './components/LoginPage'
 import ErrorPage from './components/ErrorPage'
@@ -15,7 +14,7 @@ function App() {
     {
       path: "/",
       element: <AppLayout />,
-      ErrorBoundary: ErrorPage,
+      errorElement: <ErrorPage />,
       children: [
         {
           index: true, element: <HomePage />
@@ -32,8 +31,8 @@ function App() {
               element: <WishlistPage />
             },
             {
-              path: "wishlist/:username",
-              element: <PublicWishlistPage />
+              path: ":username",
+              element: <WishlistPage />
             }
           ]
         },

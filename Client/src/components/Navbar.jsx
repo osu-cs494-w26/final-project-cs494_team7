@@ -24,6 +24,9 @@ export default function Navbar() {
           <Flex align="center" gap="6">
             <Text size={'8'}>Game Deals</Text>
             <Flex gap="4">
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <Button variant="ghost">Home</Button>
+              </Link>
               <Link to="/deals" style={{ textDecoration: 'none' }}>
                 <Button variant="ghost">Deals</Button>
               </Link>
