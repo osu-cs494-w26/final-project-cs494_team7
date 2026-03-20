@@ -1,16 +1,30 @@
 import { Box, Flex, Text, Section, TextField } from '@radix-ui/themes'
-import { useSearchUsersQuery } from '../redux/serverApi'
 import WishlistItem from './WishlistItem'
 import { useState } from 'react'
 import useWishlistGames from '../hooks/useWishlistGames'
+import { APIUrl } from '../config'
+import { useEffect } from 'react'
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedUsername, setSelectedUsername] = useState(null)
-  
-  const { data: users = [], isLoading: isSearching } = useSearchUsersQuery(searchQuery, {
-    skip: !searchQuery,
-  })
+  const [searchResults, setSearchResults] = useState([])
+  const [isSearching, setIsSearching] = useState(false)
+
+  useEffect(() => {
+    setIsSearching(true)
+    fetch(`${APIUrl}/user/${encodeURIComponent(searchQuery)}`)
+    .then((res) => res.json())
+    .then((json) => {
+      setSearchResults(json)
+    })
+    .catch(() => {
+      console.error(`Something went wrong searching users with query: ${searchQuery}`)
+    })
+    .finally(() => {
+      setIsSearching(false)
+    })
+  }, [searchQuery])
   
   const {
     gamesData,
@@ -42,12 +56,12 @@ export default function UsersPage() {
         <Flex direction="column" gap="4">
           {isSearching ? (
             <Text>Searching...</Text>
-          ) : users.length === 0 ? (
+          ) : searchResults.length === 0 ? (
             <Text color="gray">No users found matching "{searchQuery}"</Text>
           ) : (
             <Flex direction="column" gap="3">
-              <Text weight="bold">Found {users.length} user(s):</Text>
-              {users.map((user) => (
+              <Text weight="bold">Found {searchResults.length} user(s):</Text>
+              {searchResults.map((user) => (
                 <Box
                   key={user.UserID}
                   style={{

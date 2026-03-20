@@ -41,9 +41,6 @@ export const serverApi = createApi({
             }),
             invalidatesTags: ['Wishlist'],
         }),
-        searchUsers: builder.query({
-            query: (query) => `/user/${encodeURIComponent(query)}`,
-        }),
         getSession: builder.query({
             query: () => '/session',
             providesTags: ['Session'],
@@ -82,7 +79,6 @@ export const {
     useInsertWishlistItemMutation,
     useDeleteWishlistItemMutation,
     useUpdateWishlistPublicityMutation,
-    useSearchUsersQuery,
     useGetSessionQuery,
     useSigninMutation,
     useSignupMutation,
