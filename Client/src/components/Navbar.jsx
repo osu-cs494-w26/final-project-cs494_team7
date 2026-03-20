@@ -56,22 +56,21 @@ export default function Navbar() {
               </Link>
             </Flex>
           </Flex>
-          <div>
-            {username ? (
-              <Flex
+          <Flex
                 align="center"
                 justify="center"
                 gap={{ initial: '2', sm: '3' }}
                 direction="row"
-                width={{ initial: '100%', sm: 'auto' }}
-              >
-                <Text size={{ initial: '2', sm: '3' }}>{username}</Text>
-                <Button onClick={handleSignOut} variant="soft">Sign Out</Button>
-              </Flex>
+          >
+            {username ? (
+                <>
+                  <Text size={{ initial: '2', sm: '3' }}>{username}</Text>
+                  <Button onClick={handleSignOut} variant="soft">Sign Out</Button>
+                </>
             ) : (
-              <Button onClick={() => navigate('/login')}>Sign In</Button>
+                <Button onClick={() => navigate('/login')}>Sign In</Button>
             )}
-          </div>
+          </Flex>
         </Flex>
       </Section>
     </>
