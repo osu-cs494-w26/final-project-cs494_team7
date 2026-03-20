@@ -1,12 +1,25 @@
 import { Section, Flex, Text, Button } from '@radix-ui/themes'
 import { Link, useNavigate } from 'react-router'
 import { useGetSessionQuery, useSignoutMutation } from '../redux/serverApi'
+import { useEffect, useRef } from 'react'
 
 export default function Navbar() {
   const navigate = useNavigate()
   const { data } = useGetSessionQuery()
   const username = data?.username
   const [signout] = useSignoutMutation()
+  const navRef = useRef(null)
+
+  useEffect(() => {
+    const setNavHeight = () => {
+      const height = navRef.current?.offsetHeight ?? 0
+      document.documentElement.style.setProperty('--navbar-height', `${height}px`)
+    }
+
+    setNavHeight()
+    window.addEventListener('resize', setNavHeight)
+    return () => window.removeEventListener('resize', setNavHeight)
+  }, [])
 
   const handleSignOut = async () => {
     try {
@@ -25,6 +38,7 @@ export default function Navbar() {
         position="sticky"
         width="100%"
         top="0"
+        ref={navRef}
       >
         <Flex
           align={{ initial: 'flex-start', sm: 'center' }}
