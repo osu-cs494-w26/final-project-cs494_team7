@@ -61,14 +61,15 @@ export default function Navbar() {
                 justify="center"
                 gap={{ initial: '2', sm: '3' }}
                 direction="row"
+                style={{ paddingRight: '16px', paddingBottom: '4px', paddingTop: '4px' }}
           >
             {username ? (
                 <>
                   <Text size={{ initial: '2', sm: '3' }}>{username}</Text>
-                  <Button onClick={handleSignOut} variant="soft">Sign Out</Button>
+                  <Button size={{ initial: '1', sm: '2' }} onClick={handleSignOut} variant="soft">Sign Out</Button>
                 </>
             ) : (
-                <Button onClick={() => navigate('/login')}>Sign In</Button>
+                <Button size={{ initial: '1', sm: '2' }} onClick={() => navigate('/login')}>Sign In</Button>
             )}
           </Flex>
         </Flex>
