@@ -34,7 +34,7 @@ export default function Navbar() {
     <>
       <Section
         style={{ backgroundColor: 'var(--gray-5)', zIndex: '1000'}}
-        p={4}
+        p={'1'}
         position="sticky"
         width="100%"
         top="0"

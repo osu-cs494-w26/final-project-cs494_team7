@@ -1,15 +1,42 @@
 import { Box, Flex, Text, Section, TextField } from '@radix-ui/themes'
-import { useSearchUsersQuery } from '../redux/serverApi'
 import { useState } from 'react'
+import useWishlistGames from '../hooks/useWishlistGames'
+import { APIUrl } from '../config'
+import { useEffect } from 'react'
 import { Link } from 'react-router'
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedUsername, setSelectedUsername] = useState(null)
+  const [searchResults, setSearchResults] = useState([])
+  const [isSearching, setIsSearching] = useState(false)
+
+  useEffect(() => {
+    if (searchQuery === "") {
+      setSearchResults([])
+      return
+    }
+
+    setIsSearching(true)
+    fetch(`${APIUrl}/user/${encodeURIComponent(searchQuery)}`)
+    .then((res) => res.json())
+    .then((json) => {
+      setSearchResults(json)
+    })
+    .catch(() => {
+      console.error(`Something went wrong searching users with query: ${searchQuery}`)
+    })
+    .finally(() => {
+      setIsSearching(false)
+    })
+  }, [searchQuery])
   
-  const { data: users = [], isLoading: isSearching } = useSearchUsersQuery(searchQuery, {
-    skip: !searchQuery,
-  })
+  const {
+    gamesData,
+    isLoading: isLoadingWishlist,
+    wishlistError,
+    gamesError
+  } = useWishlistGames((selectedUsername ? selectedUsername : ""))
 
   const handleSearch = (query) => {
     setSearchQuery(query)
@@ -34,12 +61,12 @@ export default function UsersPage() {
         <Flex direction="column" gap="4">
           {isSearching ? (
             <Text>Searching...</Text>
-          ) : users.length === 0 ? (
+          ) : searchResults.length === 0 ? (
             <Text color="gray">No users found matching "{searchQuery}"</Text>
           ) : (
             <Flex direction="column" gap="3">
-              <Text weight="bold">Found {users.length} user(s):</Text>
-              {users.map((user) => (
+              <Text weight="bold">Found {searchResults.length} user(s):</Text>
+              {searchResults.map((user) => (
                 <Link key={user.UserID} to={`/wishlist/${user.Username}`}>
                   <Box
                     style={{

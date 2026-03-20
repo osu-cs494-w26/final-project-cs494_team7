@@ -1,5 +1,5 @@
 import { Box, Flex, Text, Section, Button } from '@radix-ui/themes'
-import { useUpdateWishlistPublicityMutation } from '../redux/serverApi'
+import { useGetWishlistPublicityQuery, useUpdateWishlistPublicityMutation } from '../redux/serverApi'
 import WishlistItem from './WishlistItem'
 import { useState } from 'react'
 import useWishlistGames from '../hooks/useWishlistGames'
@@ -11,7 +11,7 @@ export default function WishlistPage() {
   const { username } = useParams()
   const { gamesData, isLoading, wishlistError, gamesError } = useWishlistGames(username)
   const [updatePublicity, { isLoading: isUpdating }] = useUpdateWishlistPublicityMutation()
-  const [isPublic, setIsPublic] = useState(false)
+  const isPublic = useGetWishlistPublicityQuery()
   const { user, isLoggedIn } = useAuth()
   const isViewingOwnWishlist = isLoggedIn && (!username || user?.username === username)
 
@@ -24,8 +24,7 @@ export default function WishlistPage() {
   )
 
   const handleTogglePublicity = async () => {
-    const newStatus = !isPublic
-    setIsPublic(newStatus)
+    const newStatus = !isPublic.data
     await updatePublicity(newStatus)
   }
 
@@ -46,10 +45,10 @@ export default function WishlistPage() {
           <Button
             onClick={handleTogglePublicity}
             disabled={isUpdating}
-            variant={isPublic ? "solid" : "soft"}
-            color={isPublic ? "green" : "gray"}
+            variant={isPublic.data ? "solid" : "soft"}
+            color={isPublic.data ? "green" : "gray"}
           >
-            {isPublic ? "Public" : "Private"}
+            {isPublic.data ? "Public" : "Private"}
           </Button>
         }
       </Flex>
