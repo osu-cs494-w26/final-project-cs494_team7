@@ -13,8 +13,12 @@ export const serverApi = createApi({
             query: () => '/wishlist',
             providesTags: ['Wishlist'],
         }),
+        getWishlistPublicity: builder.query({
+            query: () => '/wishlist/publicity',
+            providesTags: ['WishlistPublicity']
+        }),
         getWishlistByUser: builder.query({
-            query: (username) => `/wishlist/${encodeURIComponent(username)}`,
+            query: (username) => `/wishlist/user/${encodeURIComponent(username)}`,
             providesTags: ['Wishlist'],
         }),
         insertWishlistItem: builder.mutation({
@@ -39,7 +43,7 @@ export const serverApi = createApi({
                 method: 'POST',
                 body: { IsPublic },
             }),
-            invalidatesTags: ['Wishlist'],
+            invalidatesTags: ['Wishlist', 'WishlistPublicity'],
         }),
         getSession: builder.query({
             query: () => '/session',
@@ -53,7 +57,7 @@ export const serverApi = createApi({
                 method: 'POST',
                 body: credentials,
             }),
-            invalidatesTags: ['Session'],
+            invalidatesTags: ['Session', 'WishlistPublicity'],
         }),
         signup: builder.mutation({
             query: (credentials) => ({
@@ -61,7 +65,7 @@ export const serverApi = createApi({
                 method: 'POST',
                 body: credentials,
             }),
-            invalidatesTags: ['Session'],
+            invalidatesTags: ['Session', 'WishlistPublicity'],
         }),
         signout: builder.mutation({
             query: () => ({
@@ -76,6 +80,7 @@ export const serverApi = createApi({
 export const {
     useGetWishlistQuery,
     useGetWishlistByUserQuery,
+    useGetWishlistPublicityQuery,
     useInsertWishlistItemMutation,
     useDeleteWishlistItemMutation,
     useUpdateWishlistPublicityMutation,

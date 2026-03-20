@@ -273,7 +273,7 @@ App.post("/delete", Authenticated, async (req, res) => {
   }
 });
 
-App.get("/wishlist/:user", async (req, res) => {
+App.get("/wishlist/user/:user", async (req, res) => {
   let conn;
   let queryUsername = req.session.Username;
 
@@ -433,6 +433,25 @@ App.post("/wishlist/publicity", Authenticated, async (req, res) => {
     if (conn) conn.release();
   }
 });
+
+App.get("/wishlist/publicity", Authenticated, async (req, res) => {
+  let conn;
+
+  try {
+    conn = await Pool.getConnection();
+
+    const response = await conn.query("SELECT WishlistPublic FROM User WHERE Username = ?", [
+      req.session.Username,
+    ]);
+
+    res.status(200).send(response[0]["WishlistPublic"]); // Success
+  } catch (err) {
+    res.status(500).send(); // Internal Server Error
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+})
 
 // Search for users that have a public wishlist
 App.get("/user/:query", async (req, res) => {
