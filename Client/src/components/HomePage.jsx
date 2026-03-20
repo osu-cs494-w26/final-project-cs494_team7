@@ -6,7 +6,7 @@ export default function HomePage() {
         <Section size={{ initial: '2', sm: '3' }}>
             <Flex direction="column" gap={{ initial: '2', sm: '4' }} align="center">
                 <Heading size={{ initial: '6', sm: '8' }}>Game Deal Tracker</Heading>
-                <Text size={{ initial: '2', sm: '3' }} align={{ initial: 'center', sm: 'left' }} style={{ maxWidth: "600px" }}>
+                <Text size={{ initial: '2', sm: '3' }} align={{ initial: 'center', sm: 'left' }} >
                     Track game prices across multiple storefronts, save games to your wishlist,
                     and view public wishlists from other users.
                 </Text>
