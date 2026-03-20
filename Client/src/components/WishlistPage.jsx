@@ -3,13 +3,25 @@ import { useGetWishlistPublicityQuery, useUpdateWishlistPublicityMutation } from
 import WishlistItem from './WishlistItem'
 import { useState } from 'react'
 import useWishlistGames from '../hooks/useWishlistGames'
+import { useParams } from 'react-router'
+import useAuth from '../hooks/useAuth.js'
+import { useGetWishlistQuery } from '../redux/serverApi'
 
 export default function WishlistPage() {
-  const { gamesData, isLoading, wishlistError, gamesError } = useWishlistGames()
+  const { username } = useParams()
+  const { gamesData, isLoading, wishlistError, gamesError } = useWishlistGames(username)
   const [updatePublicity, { isLoading: isUpdating }] = useUpdateWishlistPublicityMutation()
   const isPublic = useGetWishlistPublicityQuery()
+  const { user, isLoggedIn } = useAuth()
+  const isViewingOwnWishlist = isLoggedIn && (!username || user?.username === username)
 
-  console.log(isPublic)
+  const { data: myWishlistItems = [] } = useGetWishlistQuery(undefined, {
+    skip: !isLoggedIn
+  })
+
+  const myWishlistSet = new Set(
+    myWishlistItems.map((item) => String(item.CheapsharkGameID))
+  )
 
   const handleTogglePublicity = async () => {
     const newStatus = !isPublic.data
@@ -20,16 +32,25 @@ export default function WishlistPage() {
     <Section p="4">
       <Flex mb="4" justify="between" align="center">
         <Box style={{ border: '1px solid var(--gray-6)', padding: '4px 12px' }}>
-          <Text size="2" weight="medium">Wishlist</Text>
+          <Text size="2" weight="medium">
+            {!username && !isLoggedIn
+              ? "Wishlist"
+              : isViewingOwnWishlist
+                ? "Your Wishlist"
+                : `${username}'s Wishlist`
+            }
+            </Text>
         </Box>
-        <Button
-          onClick={handleTogglePublicity}
-          disabled={isUpdating}
-          variant={isPublic.data ? "solid" : "soft"}
-          color={isPublic.data ? "green" : "gray"}
-        >
-          {isPublic.data ? "Public" : "Private"}
-        </Button>
+        {(isLoggedIn && (!username || user?.username === username)) && 
+          <Button
+            onClick={handleTogglePublicity}
+            disabled={isUpdating}
+            variant={isPublic.data ? "solid" : "soft"}
+            color={isPublic.data ? "green" : "gray"}
+          >
+            {isPublic.data ? "Public" : "Private"}
+          </Button>
+        }
       </Flex>
 
       <Flex direction="column" mt="4">
@@ -38,10 +59,16 @@ export default function WishlistPage() {
         ) : isLoading ? (
           <Text>Loading...</Text>
         ) : gamesData.length === 0 ? (
-          <Text color="gray">Your wishlist is empty.</Text>
+          <Text color="gray">Wishlist is empty.</Text>
         ) : (
           gamesData.map(game => (
-            <WishlistItem key={game.gameID} game={game} />
+            <WishlistItem
+              key={game.gameID}
+              game={game}
+              wishlisted={myWishlistSet.has(String(game.gameID))}
+              isLoggedIn={isLoggedIn}
+              currentUser={!username || user?.username === username}
+            />
           ))
         )}
       </Flex>

@@ -1,9 +1,9 @@
 import { Box, Flex, Text, Section, TextField } from '@radix-ui/themes'
-import WishlistItem from './WishlistItem'
 import { useState } from 'react'
 import useWishlistGames from '../hooks/useWishlistGames'
 import { APIUrl } from '../config'
 import { useEffect } from 'react'
+import { Link } from 'react-router'
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -12,6 +12,11 @@ export default function UsersPage() {
   const [isSearching, setIsSearching] = useState(false)
 
   useEffect(() => {
+    if (searchQuery === "") {
+      setSearchResults([])
+      return
+    }
+
     setIsSearching(true)
     fetch(`${APIUrl}/user/${encodeURIComponent(searchQuery)}`)
     .then((res) => res.json())
@@ -62,41 +67,23 @@ export default function UsersPage() {
             <Flex direction="column" gap="3">
               <Text weight="bold">Found {searchResults.length} user(s):</Text>
               {searchResults.map((user) => (
-                <Box
-                  key={user.UserID}
-                  style={{
-                    border: '1px solid var(--gray-6)',
-                    borderRadius: '8px',
-                    padding: '12px',
-                    cursor: 'pointer',
-                    backgroundColor: selectedUsername === user.Username ? 'var(--gray-4)' : 'transparent'
-                  }}
-                  onClick={() => setSelectedUsername(user.Username)}
-                >
-                  <Text weight="bold">{user.Username}</Text>
-                </Box>
+                <Link key={user.UserID} to={`/wishlist/${user.Username}`}>
+                  <Box
+                    style={{
+                      border: '1px solid var(--gray-6)',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      cursor: 'pointer',
+                      backgroundColor: selectedUsername === user.Username ? 'var(--gray-4)' : 'transparent'
+                    }}
+                  >
+                    <Text weight="bold">{user.Username}</Text>
+                  </Box>
+                </Link>
               ))}
             </Flex>
           )}
         </Flex>
-      )}
-
-      {selectedUsername && (
-        <Section mt="6" p="4" style={{ border: '1px solid var(--gray-6)' }}>
-          <Box mb="4">
-            <Text size="4" weight="bold">{selectedUsername}'s Wishlist</Text>
-          </Box>
-
-          {isLoadingWishlist ? (
-            <Text>Loading wishlist...</Text>
-          ) : gamesData.length === 0 ? (
-            <Text color="gray">{selectedUsername}'s wishlist is empty.</Text>
-          ) : (
-            gamesData.map((game) => (
-              <WishlistItem key={game.gameID} game={game} />
-            ))
-          )}
-        </Section>
       )}
     </Section>
   )

@@ -4,9 +4,8 @@ import { useGetMultipleGamesQuery } from '../redux/cheapSharkApi'
 import { useMemo } from 'react'
 
 export default function useWishlistGames(username = null) {
-  const { isLoggedIn } = useAuth()
-
-  const useOwnWishlist = !username
+  const { user, isLoggedIn } = useAuth()
+  const useOwnWishlist = !username || user?.username === username
 
   // Get the current user's wishlist if no username given and is logged in.
   const {
@@ -73,11 +72,16 @@ export default function useWishlistGames(username = null) {
     [wishlistGameIds, gamesQueryData, wishlistGamesById]
   )
 
-    return {
-        wishlistItems,
-        gamesData,
-        isLoading: isWishlistLoading || isGamesLoading,
-        wishlistError,
-        gamesError
-    }
+  const wishlistSet = useMemo(() => {
+    return new Set(wishlistItems.map(item => String(item.CheapsharkGameID)))
+  }, [wishlistItems])
+
+  return {
+      wishlistItems,
+      wishlistSet,
+      gamesData,
+      isLoading: isWishlistLoading || isGamesLoading,
+      wishlistError,
+      gamesError
+  }
 }
