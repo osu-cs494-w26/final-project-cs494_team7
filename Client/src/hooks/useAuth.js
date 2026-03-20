@@ -4,6 +4,6 @@ export default function useAuth() {
     const { data } = useGetSessionQuery()
     return {
         user: data,
-        isLoggedIn: !!data
+        isLoggedIn: !!data?.username
     }
 }

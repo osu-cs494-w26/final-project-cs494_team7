@@ -67,7 +67,7 @@ export default function Deal({ dealData, storeName, isLoggedIn, wishlisted }) {
                 onClick={handleAddToWishlist}
                 disabled={isLoading}
               >
-                {wishlisted ? 'on wishlist' : 'Add to Wishlist'}
+                {wishlisted ? 'On Wishlist' : 'Add to Wishlist'}
               </Button>
             }
           </Flex>

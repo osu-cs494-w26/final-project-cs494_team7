@@ -1,10 +1,10 @@
-import { Section, Text, Button, Flex, TextField, DropdownMenu } from "@radix-ui/themes";
+import { Section, Text, Button, Flex, TextField, DropdownMenu, Spinner } from "@radix-ui/themes";
 import { Search, ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react';
 import Deal from "./Deal";
 import { useGetDealsQuery, useGetStoresQuery } from "../redux/cheapSharkApi.js";
-import { useState, useMemo } from 'react'
-import { useGetWishlistQuery } from "../redux/serverApi.js";
-import useAuth from "../hooks/useAuth.js"
+import { useState, useEffect } from 'react'
+import useAuth from "../hooks/useAuth.js";
+import useWishlistGames from '../hooks/useWishlistGames'
 
 const sortByOptions = {
   Savings: "Savings",
@@ -30,18 +30,13 @@ export default function DealsPage() {
     desc: desc,
     title: title
   }
-  const { data, error, isLoading } = useGetDealsQuery(dealParams, { refetchOnMountOrArgChange: true })
+  const { data, error, isLoading, isFetching } = useGetDealsQuery(dealParams, { refetchOnMountOrArgChange: true })
   const deals = data?.deals ?? []
-  const totalPages = data?.totalPages ?? 1
+  const totalPages = (data?.totalPages ?? 0) + 1
 
-  // Get wishlist if authorized and create new set.
-  const { user, isLoggedIn } = useAuth()
-  const { data: wishlist = [] } = useGetWishlistQuery(user, {
-    skip: !isLoggedIn
-  })
-  const wishlistSet = useMemo(() => {
-    return new Set(wishlist.map(item => String(item.CheapsharkGameID)))
-  }, [wishlist])
+  const { isLoggedIn } = useAuth()
+  
+  const { wishlistSet } = useWishlistGames()
 
   // Stores info.
   const { data: stores = [] } = useGetStoresQuery()
@@ -49,15 +44,20 @@ export default function DealsPage() {
     stores.map(store => [store.storeID, store.storeName])
   )
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [pageNumber])
+
   return (
     <>
-      <Section p="3" style={{backgroundColor: "var(--gray-2)"}}>
+      <Section p="3" style={{backgroundColor: "var(--gray-2)", zIndex: "900", borderBottom: "1px solid var(--gray-4)"}} position="sticky" top="72px">
         <Flex align="center" style={{ width: "100%" }}>
           <Flex style={{ flex: 1 }} justify="center" gap="4" align="center" wrap="wrap">
             
             <form onSubmit={(e) => {
               e.preventDefault()
               setTitle(draftTitle)
+              setPageNumber(0)
             }}>
               <TextField.Root
                 placeholder="Search For Games"
@@ -103,33 +103,65 @@ export default function DealsPage() {
         </Flex>
       </Section>
       {error ? (
-          <li>Could not load deals.</li>
-      ) : isLoading ? (
-          <li>Loading...</li>
+        <Text>Could not load deals.</Text>
+      ) : isLoading || isFetching ? (
+        <Flex gap="4" justify="center" align="center" mt="50px">
+          <Spinner size="4" />
+          <Text>Loading deals...</Text>
+        </Flex>
+      ) : deals.length === 0 ? (
+        <Text>No deals found.</Text>
       ) : (
-          deals.map((deal) => (
-            <Deal
-              key={deal.dealID}
-              dealData={deal}
-              storeName={storesById[deal.storeID]}
-              isLoggedIn={isLoggedIn}
-              wishlisted={wishlistSet.has(String(deal.gameID))}
-            />
-          ))
+        <>
+          <div style={{ opacity: isFetching ? 0.5 : 1 }}>
+            {deals.map((deal) => (
+              <Deal
+                key={deal.dealID}
+                dealData={deal}
+                storeName={storesById[deal.storeID]}
+                isLoggedIn={isLoggedIn}
+                wishlisted={wishlistSet.has(String(deal.gameID))}
+              />
+            ))}
+          </div>
+          
+          <Flex
+            align="center"
+            justify="center"
+            gap="2"
+            position="sticky"
+            bottom="0"
+            p="3"
+            style={{backgroundColor: "var(--gray-2)", zIndex: "900", borderTop: "1px solid var(--gray-4)"}}
+          >
+            <Button
+              onClick={() => setPageNumber(0)}
+              disabled={(pageNumber === 0) || isFetching}
+            >
+              First
+            </Button>
+            <Button
+              onClick={() => setPageNumber(Math.max(0, pageNumber - 1))}
+              disabled={(pageNumber === 0) || isFetching}
+            >
+              Previous
+            </Button>
+            Page {pageNumber+1} of {totalPages}
+            <Button
+              onClick={() => setPageNumber(Math.min(pageNumber + 1, totalPages - 1))}
+              disabled={(pageNumber === totalPages -  1) || isFetching}
+            >
+              Next
+            </Button>
+            <Button
+              onClick={() => setPageNumber(totalPages - 1)}
+              disabled={(pageNumber === totalPages -  1) || isFetching}
+            >
+              Last
+            </Button>
+          </Flex>
+        </>
       )}
-      <Flex align="center" justify="center" style={{margin: 20}} gap="2">
-        <Button
-          onClick={() => setPageNumber(Math.max(0, pageNumber - 1))}
-        >
-          Previous Page
-        </Button>
-        Page {pageNumber+1} of {totalPages+1}
-        <Button
-          onClick={() => setPageNumber(Math.min(pageNumber +1, totalPages+1))}
-        >
-          Next Page
-        </Button>
-      </Flex>
     </>
   )
 }

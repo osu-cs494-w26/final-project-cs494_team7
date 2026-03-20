@@ -1,8 +1,8 @@
-import { Section, Flex, Text, Button, TextField } from '@radix-ui/themes'
-import { Outlet, Link, useNavigate } from 'react-router'
+import { Section, Flex, Text, Button } from '@radix-ui/themes'
+import { Link, useNavigate } from 'react-router'
 import { useGetSessionQuery, useSignoutMutation } from '../redux/serverApi'
 
-export default function Navbar({children}) {
+export default function Navbar() {
   const navigate = useNavigate()
   const { data } = useGetSessionQuery()
   const username = data?.username
@@ -19,11 +19,14 @@ export default function Navbar({children}) {
 
   return (
     <>
-      <Section style={{backgroundColor: "var(--gray-5)"}} p={'4'}>
+      <Section style={{backgroundColor: "var(--gray-5)", zIndex: "1000"}} p={'4'} position="sticky" top="0" height="72px">
         <Flex align={'center'} justify={'between'}>
           <Flex align="center" gap="6">
             <Text size={'8'}>Game Deals</Text>
             <Flex gap="4">
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <Button variant="ghost">Home</Button>
+              </Link>
               <Link to="/deals" style={{ textDecoration: 'none' }}>
                 <Button variant="ghost">Deals</Button>
               </Link>
@@ -47,7 +50,6 @@ export default function Navbar({children}) {
           </div>
         </Flex>
       </Section>
-      {children || <Outlet />}
     </>
   )
 }
