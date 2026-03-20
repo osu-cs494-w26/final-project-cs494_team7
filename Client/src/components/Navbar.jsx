@@ -19,11 +19,29 @@ export default function Navbar() {
 
   return (
     <>
-      <Section style={{backgroundColor: "var(--gray-5)", zIndex: "1000"}} p={'4'} position="sticky" top="0" height="72px">
-        <Flex align={'center'} justify={'between'}>
-          <Flex align="center" gap="6">
-            <Text size={'8'}>Game Deals</Text>
-            <Flex gap="4">
+      <Section
+        style={{ backgroundColor: 'var(--gray-5)', zIndex: '1000' }}
+        p={4}
+        position="sticky"
+        top="0"
+      >
+        <Flex
+          align={{ initial: 'flex-start', sm: 'center' }}
+          justify="between"
+          direction={{ initial: 'column', xs: 'row' }}
+          gap={{ initial: '2', sm: '6' }}
+        >
+          <Flex
+            align="center"
+            direction={{ initial: 'column', xs: 'row' }}
+            gap={{ initial: '3', sm: '6' }}
+            width={{ initial: '100%', sm: 'auto' }}
+          >
+            <Text size={{ initial: '5', sm: '8' }}>Game Deals</Text>
+            <Flex
+              gap="4"
+              direction="row"
+            >
               <Link to="/" style={{ textDecoration: 'none' }}>
                 <Button variant="ghost">Home</Button>
               </Link>
@@ -40,8 +58,14 @@ export default function Navbar() {
           </Flex>
           <div>
             {username ? (
-              <Flex gap="3" align="center">
-                <Text size="2">{username}</Text>
+              <Flex
+                align="center"
+                justify="center"
+                gap={{ initial: '2', sm: '3' }}
+                direction="row"
+                width={{ initial: '100%', sm: 'auto' }}
+              >
+                <Text size={{ initial: '2', sm: '3' }}>{username}</Text>
                 <Button onClick={handleSignOut} variant="soft">Sign Out</Button>
               </Flex>
             ) : (
