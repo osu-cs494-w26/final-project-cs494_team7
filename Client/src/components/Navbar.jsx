@@ -5,8 +5,8 @@ import { useEffect, useRef } from 'react'
 
 export default function Navbar() {
   const navigate = useNavigate()
-  const { data } = useGetSessionQuery()
-  const username = data?.username
+  const { data, error } = useGetSessionQuery()
+  const username = error ? undefined : data?.username
   const [signout] = useSignoutMutation()
   const navRef = useRef(null)
 
