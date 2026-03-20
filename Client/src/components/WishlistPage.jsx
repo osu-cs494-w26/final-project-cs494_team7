@@ -13,6 +13,7 @@ export default function WishlistPage() {
   const [updatePublicity, { isLoading: isUpdating }] = useUpdateWishlistPublicityMutation()
   const [isPublic, setIsPublic] = useState(false)
   const { user, isLoggedIn } = useAuth()
+  const isViewingOwnWishlist = isLoggedIn && (!username || user?.username === username)
 
   const { data: myWishlistItems = [] } = useGetWishlistQuery(undefined, {
     skip: !isLoggedIn
@@ -32,7 +33,14 @@ export default function WishlistPage() {
     <Section p="4">
       <Flex mb="4" justify="between" align="center">
         <Box style={{ border: '1px solid var(--gray-6)', padding: '4px 12px' }}>
-          <Text size="2" weight="medium">Wishlist</Text>
+          <Text size="2" weight="medium">
+            {!username && !isLoggedIn
+              ? "Wishlist"
+              : isViewingOwnWishlist
+                ? "Your Wishlist"
+                : `${username}'s Wishlist`
+            }
+            </Text>
         </Box>
         {(isLoggedIn && (!username || user?.username === username)) && 
           <Button
@@ -52,7 +60,7 @@ export default function WishlistPage() {
         ) : isLoading ? (
           <Text>Loading...</Text>
         ) : gamesData.length === 0 ? (
-          <Text color="gray">Your wishlist is empty.</Text>
+          <Text color="gray">Wishlist is empty.</Text>
         ) : (
           gamesData.map(game => (
             <WishlistItem
